@@ -3,7 +3,13 @@
  * Copyright (C) 2008-2020 Michael Gaisser (mjgaisser@gmail.com)
  * Licensed under the MPL v2.0 or later
  * 
- * Version: 1.2
+ * Version: 1.2+
+ */
+
+/* CHANGELOG
+ * v1.2.1
+ * [UPD] Transparency switched to fuschia
+ * [ADD] transparency now works with ANIM
  */
 
 using Idmr.LfdReader;
@@ -65,15 +71,17 @@ namespace Idmr.LfdImageReader
 			cmdClose.Left = cmdSave.Left + 56;
 			pctImage.Size = delt.Image.Size;
 			Bitmap t = _image;
-			t.MakeTransparent(Color.Black);
+			t.MakeTransparent(Color.Fuchsia);
 			pctImage.Image = t;
 		}
 
 		private void getAnim()
 		{
-			_image = _animation.Frames[_frame-1].Image;
+			_image = _animation.Frames[_frame - 1].Image;
 			_animation.RelativePosition = true;
-			pctImage.Image = _animation.Frames[_frame - 1].Image;
+			Bitmap t = _animation.Frames[_frame - 1].Image;
+			t.MakeTransparent(Color.Fuchsia);
+			pctImage.Image = t;
 			_animation.RelativePosition = false;
 		}
 

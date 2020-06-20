@@ -45,6 +45,7 @@ namespace Idmr.LfdImageReader
 			this.cmdExit = new System.Windows.Forms.Button();
 			this.opnFile = new System.Windows.Forms.OpenFileDialog();
 			this.opnTie = new System.Windows.Forms.OpenFileDialog();
+			this.cmdChangeInstall = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// txtFile
@@ -92,7 +93,7 @@ namespace Idmr.LfdImageReader
 			// cmdShow
 			// 
 			this.cmdShow.Enabled = false;
-			this.cmdShow.Location = new System.Drawing.Point(200, 104);
+			this.cmdShow.Location = new System.Drawing.Point(200, 88);
 			this.cmdShow.Name = "cmdShow";
 			this.cmdShow.Size = new System.Drawing.Size(88, 32);
 			this.cmdShow.TabIndex = 5;
@@ -102,7 +103,7 @@ namespace Idmr.LfdImageReader
 			// cmdExit
 			// 
 			this.cmdExit.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cmdExit.Location = new System.Drawing.Point(200, 160);
+			this.cmdExit.Location = new System.Drawing.Point(200, 242);
 			this.cmdExit.Name = "cmdExit";
 			this.cmdExit.Size = new System.Drawing.Size(88, 32);
 			this.cmdExit.TabIndex = 5;
@@ -119,14 +120,24 @@ namespace Idmr.LfdImageReader
 			// 
 			this.opnTie.DefaultExt = "exe";
 			this.opnTie.Filter = "TIE95|TIE95.exe|TIE original|TIE.exe";
-			this.opnTie.FileOk += new System.ComponentModel.CancelEventHandler(this.opnTie_FileOk);
+			// 
+			// cmdChangeInstall
+			// 
+			this.cmdChangeInstall.Location = new System.Drawing.Point(200, 210);
+			this.cmdChangeInstall.Name = "cmdChangeInstall";
+			this.cmdChangeInstall.Size = new System.Drawing.Size(88, 26);
+			this.cmdChangeInstall.TabIndex = 6;
+			this.cmdChangeInstall.Text = "Change Install";
+			this.cmdChangeInstall.UseVisualStyleBackColor = true;
+			this.cmdChangeInstall.Click += new System.EventHandler(this.cmdChangeInstall_Click);
 			// 
 			// MainForm
 			// 
 			this.AcceptButton = this.cmdShow;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.cmdExit;
-			this.ClientSize = new System.Drawing.Size(304, 313);
+			this.ClientSize = new System.Drawing.Size(304, 290);
+			this.Controls.Add(this.cmdChangeInstall);
 			this.Controls.Add(this.cmdShow);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.lstLFD);
@@ -152,5 +163,6 @@ namespace Idmr.LfdImageReader
 		private System.Windows.Forms.Button cmdExit;
 		private System.Windows.Forms.OpenFileDialog opnFile;
 		private System.Windows.Forms.OpenFileDialog opnTie;
+		private System.Windows.Forms.Button cmdChangeInstall;
 	}
 }
