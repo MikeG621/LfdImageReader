@@ -1,12 +1,13 @@
 /*
  * LFD Image Reader.exe, Exports images and animation frames from LFD resources
- * Copyright (C) 2008-2020 Michael Gaisser (mjgaisser@gmail.com)
+ * Copyright (C) 2008-2026 Michael Gaisser (mjgaisser@gmail.com)
  * Licensed under the MPL v2.0 or later
  * 
  * Version: 1.2+
  */
 
 /* CHANGELOG
+ * [ADD] ability to scale images
  * v1.2.1
  * [UPD] Transparency switched to fuschia
  * [ADD] transparency now works with ANIM
@@ -21,68 +22,81 @@ namespace Idmr.LfdImageReader
 {
 	public partial class ImageForm : System.Windows.Forms.Form
 	{
-		private ColorPalette _palette;
-		private int _frame = -1;
-		private Bitmap _image;
-		private Anim _animation = null;
-		string _resource;
+		//readonly ColorPalette _palette;
+		int _frame = -1;
+		Bitmap _image;
+		readonly Anim _animation = null;
+		readonly string _resource;
 
 		public ImageForm(Anim anim, ColorPalette palette)
 		{
 			InitializeComponent();
-			_palette = palette;
+			//_palette = palette;
 			_resource = anim.ToString();
 			_animation = anim;
 			_animation.SetPalette(palette);
 			_frame = 1;
+			cboScale.SelectedIndex = 0;
 			lblFrame.Text = _frame + "/" + _animation.NumberOfFrames;
-			Width = (_animation.Width + 6 < 120 ? 120 : _animation.Width + 6);
-			Height = _animation.Height + 90;
 			lblFrame.Visible = true;
 			cmdNext.Visible = true;
 			cmdPrev.Visible = true;
-			lblFrame.Top = Height - 84;
-			cmdNext.Top = lblFrame.Top;
-			cmdPrev.Top = cmdNext.Top;
-			cmdSave.Top = cmdNext.Top + 20;
-			cmdClose.Top = cmdSave.Top;
-			lblFrame.Left = Width / 2 - 22;
-			cmdNext.Left = lblFrame.Left + 40;
-			cmdPrev.Left = lblFrame.Left - 32;
-			cmdSave.Left = cmdPrev.Left;
-			cmdClose.Left = cmdSave.Left + 56;
-			pctImage.Width = _animation.Width;
-			pctImage.Height = _animation.Height;
+			scaleForm(_animation.Width, _animation.Height);
 			getAnim();
 		}
 
 		public ImageForm(Delt delt, ColorPalette palette)
 		{
 			InitializeComponent();
-			_palette = palette;
+			//_palette = palette;
 			_resource = delt.ToString();
-			Width = (delt.Width + 6 < 120 ? 120 : delt.Width + 6);
-			Height = delt.Height + 66;
 			_image = delt.Image;
 			_image.Palette = palette;
-			cmdSave.Top = Height - 64;
-			cmdClose.Top = cmdSave.Top;
-			cmdSave.Left = Width / 2 - 52;
-			cmdClose.Left = cmdSave.Left + 56;
-			pctImage.Size = delt.Image.Size;
-			Bitmap t = _image;
-			t.MakeTransparent(Color.Fuchsia);
-			pctImage.Image = t;
+			//Bitmap t = _image;
+			_image.MakeTransparent(Color.Fuchsia);
+			//pctImage.Image = t;
+			cboScale.SelectedIndex = 0;
+			scaleForm(delt.Width, delt.Height);
 		}
 
 		private void getAnim()
 		{
 			_image = _animation.Frames[_frame - 1].Image;
 			_animation.RelativePosition = true;
-			Bitmap t = _animation.Frames[_frame - 1].Image;
-			t.MakeTransparent(Color.Fuchsia);
-			pctImage.Image = t;
+			//Bitmap t = _animation.Frames[_frame - 1].Image;
+			_image.MakeTransparent(Color.Fuchsia);
+			//pctImage.Image = t;
 			_animation.RelativePosition = false;
+			pctImage.Invalidate();
+		}
+
+		void scaleForm(int width, int height)
+		{
+			width *= cboScale.SelectedIndex + 1;
+			height *= cboScale.SelectedIndex + 1;
+			Width = (width + 6 < 150 ? 150 : width + 6);
+			Height = height + 96;
+			if (_animation != null)
+			{
+				Height += 24;
+				lblFrame.Top = Height - 114;
+				cmdNext.Top = lblFrame.Top;
+				cmdPrev.Top = cmdNext.Top;
+				lblFrame.Left = Width / 2 - 32;
+				cmdNext.Left = lblFrame.Left + 50;
+				cmdPrev.Left = lblFrame.Left - 32;
+			}
+			cmdSave.Top = Height - 94;
+			cmdClose.Top = cmdSave.Top;
+			lblScale.Top = cmdSave.Top + 32;
+			cboScale.Top = lblScale.Top - 2;
+			cmdSave.Left = Width / 2 - 64;
+			cmdClose.Left = cmdSave.Left + 56;
+			lblScale.Left = cmdSave.Left;
+			cboScale.Left = lblScale.Left + 40;
+			pctImage.Width = width;
+			pctImage.Height = height;
+			pctImage.Invalidate();
 		}
 
 		private void cmdPrev_Click(object sender, EventArgs e)
@@ -113,6 +127,18 @@ namespace Idmr.LfdImageReader
 		{
 			_image.Save(savFile.FileName,ImageFormat.Bmp);		// bmImage is already in 8bbp Indexed, just have to save it.
 			// NOTE: may not match 100%, save function tends to switch pixel data to other pixel values of same color
+		}
+
+		private void cboScale_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (_animation != null) scaleForm(_animation.Width, _animation.Height);
+			else scaleForm(_image.Width, _image.Height);
+		}
+
+		private void pctImage_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
+		{
+			var g = e.Graphics;
+			g.DrawImage(_image, 0, 0, _image.Width * (cboScale.SelectedIndex + 1), _image.Height * (cboScale.SelectedIndex + 1));
 		}
 	}
 }
